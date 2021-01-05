@@ -6,9 +6,9 @@ class QrCodeController {
   async store(req, res) {
     const { url } = req.query;
 
-    const code = qr.image(url, { type: "svg" });
+    const code = qr.image(url, { type: "png" });
 
-    res.type("svg");
+    res.type("png");
     code.pipe(res);
   }
 
