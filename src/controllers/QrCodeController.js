@@ -1,7 +1,7 @@
 const qr = require("qr-image");
 const { v4: uuidv4 } = require("uuid");
 const { PrismaClient } = require("@prisma/client");
-const scrape = require('website-scraper');
+const scrape = require("website-scraper");
 const prisma = new PrismaClient();
 
 class QrCodeController {
@@ -29,8 +29,6 @@ class QrCodeController {
         name: true,
       },
     });
-
-    console.log(user[0].name);
 
     res.render("home", {
       name: user[0].name,
