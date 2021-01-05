@@ -1,0 +1,319 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model addres {
+  id         Int       @id @default(autoincrement())
+  street     String
+  district   String
+  cep        String
+  city       String
+  state      String
+  number     String
+  created_at DateTime?
+  updated_at DateTime?
+}
+
+model courses {
+  id                         Int       @id @default(autoincrement())
+  name                       String    @unique
+  educational_institution_id Int
+  created_at                 DateTime?
+  updated_at                 DateTime?
+}
+
+model documents {
+  id         Int       @id @default(autoincrement())
+  name       String
+  created_at DateTime?
+  updated_at DateTime?
+}
+
+model document_internships {
+  id                 Int       @id @default(autoincrement())
+  internship_id      Int
+  document_id        Int
+  status_document_id Int
+  trainee_id         Int
+  file_id            Int?
+  disapproved_motive String?
+  created_at         DateTime?
+  updated_at         DateTime?
+  analysis_date      DateTime?
+  analysis_by        Int?
+  viewed             Boolean?
+  viewed_supervisor  Boolean?
+}
+
+model doc_mandatory {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  file                    String
+  created_at              DateTime?
+  updated_at              DateTime?
+  type                    String?
+  trainee_doc_mandatory   trainee_doc_mandatory[]
+  vacancies_doc_mandatory vacancies_doc_mandatory[]
+}
+
+model educational_institutions {
+  id         Int       @id @default(autoincrement())
+  name       String
+  cnpj       String
+  created_at DateTime?
+  updated_at DateTime?
+}
+
+model files {
+  id         Int       @id @default(autoincrement())
+  mime       String
+  path       String
+  name       String
+  amount     Int
+  created_at DateTime?
+  updated_at DateTime?
+}
+
+model health_preceptors {
+  id                  Int       @id @default(autoincrement())
+  phone               String?
+  health_unit_id      Int
+  performance_area_id Int
+  user_id             Int
+  created_at          DateTime?
+  updated_at          DateTime?
+  workload            Int?
+  active              Boolean?
+  viewed              Boolean?
+  amount_fixed        Int?
+}
+
+model institution_supervisors {
+  id                         Int       @id @default(autoincrement())
+  user_id                    Int
+  educational_institution_id Int
+  phone                      String
+  created_at                 DateTime?
+  updated_at                 DateTime?
+}
+
+model internships {
+  id                         Int                   @id @default(autoincrement())
+  trainee_id                 Int
+  supervisor_id              Int
+  educational_institution_id Int
+  course_id                  Int
+  start_date                 DateTime?
+  finish_date                DateTime?
+  status_internship_id       Int
+  health_unity_id            Int
+  observation                String?
+  created_at                 DateTime?
+  updated_at                 DateTime?
+  id_vacancy_shift           Int?
+  teaching_plan_id           Int?
+  viewed                     Boolean?
+  deleted_at                 DateTime?
+  vacancies_shift            vacancies_shift?      @relation(fields: [id_vacancy_shift], references: [id])
+  teaching_plans             teaching_plans?       @relation(fields: [teaching_plan_id], references: [id])
+  internships_days           internships_days[]
+  internships_revoked        internships_revoked[]
+
+  @@index([id_vacancy_shift], name: "internships_id_vacancy_shift_foreign")
+  @@index([teaching_plan_id], name: "internships_teaching_plan_id_foreign")
+}
+
+model internships_days {
+  id            Int         @id @default(autoincrement())
+  id_internship Int
+  id_week_day   Int
+  created_at    DateTime?
+  updated_at    DateTime?
+  internships   internships @relation(fields: [id_internship], references: [id])
+  week_days     week_days   @relation(fields: [id_week_day], references: [id])
+
+  @@index([id_internship], name: "internships_days_id_internship_foreign")
+  @@index([id_week_day], name: "internships_days_id_week_day_foreign")
+}
+
+model internships_revoked {
+  id             Int         @id @default(autoincrement())
+  user_id        Int
+  internship_id  Int
+  motive_revoked String
+  created_at     DateTime?
+  updated_at     DateTime?
+  internships    internships @relation(fields: [internship_id], references: [id])
+  users          users       @relation(fields: [user_id], references: [id])
+
+  @@index([internship_id], name: "internships_revoked_internship_id_foreign")
+  @@index([user_id], name: "internships_revoked_user_id_foreign")
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement())
+  migration String
+  batch     Int
+}
+
+// The underlying table does not contain a valid unique identifier and can therefore currently not be handled.
+// model password_resets {
+  // email      String
+  // token      String
+  // created_at DateTime?
+
+  // @@index([email], name: "password_resets_email_index")
+// }
+
+model performance_areas {
+  id         Int       @id @default(autoincrement())
+  name       String
+  created_at DateTime?
+  updated_at DateTime?
+}
+
+model rules {
+  id         Int       @id @default(autoincrement())
+  name       String
+  created_at DateTime?
+  updated_at DateTime?
+}
+
+model status_documents {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  created_at              DateTime?
+  updated_at              DateTime?
+  trainee_doc_mandatory   trainee_doc_mandatory[]
+  vacancies_doc_mandatory vacancies_doc_mandatory[]
+}
+
+model status_internships {
+  id         Int       @id @default(autoincrement())
+  name       String
+  created_at DateTime?
+  updated_at DateTime?
+}
+
+model status_vacancies {
+  id         Int         @id @default(autoincrement())
+  name       String
+  created_at DateTime?
+  updated_at DateTime?
+  vacancies  vacancies[]
+}
+
+model teaching_plans {
+  id          Int           @id @default(autoincrement())
+  title       String        @unique
+  description String
+  created_at  DateTime?
+  updated_at  DateTime?
+  internships internships[]
+}
+
+model trainees {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  email                 String?                 @unique
+  cpf                   String                  @unique
+  phone                 String?
+  created_at            DateTime?
+  updated_at            DateTime?
+  trainee_doc_mandatory trainee_doc_mandatory[]
+}
+
+model trainee_doc_mandatory {
+  id                 Int               @id @default(autoincrement())
+  id_trainee         Int
+  id_doc_mandatory   Int
+  file_name          String
+  created_at         DateTime?
+  updated_at         DateTime?
+  status_document_id Int?
+  disaproved_motive  String?
+  analysis_date      DateTime?
+  analysis_by        Int?
+  viewed             Boolean?
+  viewed_supervisor  Boolean?
+  doc_mandatory      doc_mandatory     @relation(fields: [id_doc_mandatory], references: [id])
+  trainees           trainees          @relation(fields: [id_trainee], references: [id])
+  status_documents   status_documents? @relation(fields: [status_document_id], references: [id])
+
+  @@index([id_doc_mandatory], name: "trainee_doc_mandatory_id_doc_mandatory_foreign")
+  @@index([id_trainee], name: "trainee_doc_mandatory_id_trainee_foreign")
+  @@index([status_document_id], name: "trainee_doc_mandatory_status_document_id_foreign")
+}
+
+model users {
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  rule_id             Int
+  email               String?               @unique
+  active              Boolean
+  password            String
+  remember_token      String?
+  created_at          DateTime?
+  updated_at          DateTime?
+  cpf                 String?               @unique
+  internships_revoked internships_revoked[]
+}
+
+model vacancies {
+  id                      Int                       @id @default(autoincrement())
+  title                   String
+  user_preceptor_id       Int
+  health_unity_id         Int
+  created_at              DateTime?
+  updated_at              DateTime?
+  status_vacancies_id     Int?
+  status_vacancies        status_vacancies?         @relation(fields: [status_vacancies_id], references: [id])
+  vacancies_doc_mandatory vacancies_doc_mandatory[]
+  vacancies_shift         vacancies_shift[]
+
+  @@index([status_vacancies_id], name: "vacancies_status_vacancies_id_foreign")
+}
+
+model vacancies_doc_mandatory {
+  id                 Int               @id @default(autoincrement())
+  id_vacancies       Int
+  id_doc_mandatory   Int
+  filled_file        String?
+  status_document_id Int?
+  disapproved_motive String?
+  created_at         DateTime?
+  updated_at         DateTime?
+  doc_mandatory      doc_mandatory     @relation(fields: [id_doc_mandatory], references: [id])
+  vacancies          vacancies         @relation(fields: [id_vacancies], references: [id])
+  status_documents   status_documents? @relation(fields: [status_document_id], references: [id])
+
+  @@index([id_doc_mandatory], name: "vacancies_doc_mandatory_id_doc_mandatory_foreign")
+  @@index([id_vacancies], name: "vacancies_doc_mandatory_id_vacancies_foreign")
+  @@index([status_document_id], name: "vacancies_doc_mandatory_status_document_id_foreign")
+}
+
+model vacancies_shift {
+  id          Int           @id @default(autoincrement())
+  amount      Int
+  shift       String
+  id_vacancy  Int
+  created_at  DateTime?
+  updated_at  DateTime?
+  vacancies   vacancies     @relation(fields: [id_vacancy], references: [id])
+  internships internships[]
+
+  @@index([id_vacancy], name: "vacancies_shift_id_vacancy_foreign")
+}
+
+model week_days {
+  id               Int                @id @default(autoincrement())
+  day              String
+  created_at       DateTime?
+  updated_at       DateTime?
+  internships_days internships_days[]
+}

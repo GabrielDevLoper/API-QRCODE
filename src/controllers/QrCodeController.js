@@ -1,4 +1,6 @@
 const qr = require("qr-image");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 class QrCodeController {
   async store(req, res) {
@@ -12,9 +14,19 @@ class QrCodeController {
 
   async renderQrcode(req, res) {
     const { id } = req.params;
+    const user = await prisma.users.findMany({
+      where: { id: Number(id) },
+      select: {
+        cpf: true,
+        name: true,
+      },
+    });
+
+    console.log(user[0].name);
 
     res.render("home", {
-      url: "facebook.com",
+      name: user[0].name,
+      cpf: user[0].cpf,
     });
   }
 }
