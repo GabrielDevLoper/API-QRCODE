@@ -1,4 +1,5 @@
 const qr = require("qr-image");
+const { v4: uuidv4 } = require("uuid");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
@@ -11,6 +12,11 @@ class QrCodeController {
 
     res.type("svg");
     code.pipe(res);
+
+    //adicionando o qrd em pd a uma pasta
+    codePDF.pipe(
+      require("fs").createWriteStream(`src/qrcodes/${url}-${uuidv4()}.pdf`)
+    );
   }
 
   async renderQrcode(req, res) {

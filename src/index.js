@@ -12,6 +12,6 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(routes);
 
-app.listen(3001, () => {
+app.listen(3333, () => {
   console.log("servidor ligado");
 });
