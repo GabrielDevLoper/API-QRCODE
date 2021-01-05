@@ -2,6 +2,7 @@ const { Router } = require("express");
 const QrCodeController = require("./controllers/QrCodeController");
 const routes = Router();
 
-routes.post("/qrcode", QrCodeController.store);
+routes.get("/home/:id", QrCodeController.renderQrcode);
+routes.get("/qrcode", QrCodeController.store);
 
 module.exports = routes;

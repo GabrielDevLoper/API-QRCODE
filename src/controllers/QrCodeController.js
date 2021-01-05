@@ -2,12 +2,20 @@ const qr = require("qr-image");
 
 class QrCodeController {
   async store(req, res) {
-    const { urls } = req.body;
+    const { url } = req.query;
 
-    const code = qr.image(urls, { type: "svg" });
+    const code = qr.image(url, { type: "svg" });
 
     res.type("svg");
     code.pipe(res);
+  }
+
+  async renderQrcode(req, res) {
+    const { id } = req.params;
+
+    res.render("home", {
+      url: "facebook.com",
+    });
   }
 }
 
