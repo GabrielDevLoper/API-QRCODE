@@ -1,6 +1,7 @@
 const qr = require("qr-image");
 const { v4: uuidv4 } = require("uuid");
 const { PrismaClient } = require("@prisma/client");
+const scrape = require('website-scraper');
 const prisma = new PrismaClient();
 
 class QrCodeController {
