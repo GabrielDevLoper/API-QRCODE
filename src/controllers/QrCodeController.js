@@ -22,6 +22,7 @@ class QrCodeController {
 
   async renderQrcode(req, res) {
     const { id } = req.params;
+
     const user = await prisma.users.findMany({
       where: { id: Number(id) },
       select: {
