@@ -11,28 +11,28 @@ class QrCodeController {
     const code = qr.image(url, { type: "svg" });
     const codePDF = qr.image(url, { type: "pdf" });
 
-    res.type("svg");
-    code.pipe(res);
-
     //adicionando o qrd em pd a uma pasta
     codePDF.pipe(
       require("fs").createWriteStream(`src/qrcodes/${url}-${uuidv4()}.pdf`)
     );
+
+    res.type("svg");
+    return code.pipe(res);
   }
 
   async renderQrcode(req, res) {
     const { id } = req.params;
 
-    const user = await prisma.users.findMany({
+    const user = await prisma.tb_usuarios.findMany({
       where: { id: Number(id) },
       select: {
         cpf: true,
-        name: true,
+        nome: true,
       },
     });
 
     res.render("home", {
-      name: user[0].name,
+      name: user[0].nome,
       cpf: user[0].cpf,
     });
   }
