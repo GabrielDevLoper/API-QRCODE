@@ -23,19 +23,17 @@ class QrCodeController {
   async renderQrcode(req, res) {
     const { id } = req.params;
 
-    const user = await prisma.tb_usuarios.findMany({
-      where: { id: Number(id) },
-      select: {
-        cpf: true,
-        nome: true,
-      },
-    });
+    const user = await prisma.tb_usuarios
+      .findUnique({
+        where: { id: Number(id) },
+      })
+      .paciente_agendamento();
 
     console.log(user);
 
     res.render("home", {
-      name: user[0].nome,
-      cpf: user[0].cpf,
+      name: user.nome,
+      cpf: user.cpf,
     });
   }
 }
