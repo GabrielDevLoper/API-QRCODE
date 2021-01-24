@@ -31,6 +31,8 @@ class QrCodeController {
       },
     });
 
+    console.log(user);
+
     res.render("home", {
       name: user[0].nome,
       cpf: user[0].cpf,

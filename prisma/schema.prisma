@@ -73,6 +73,7 @@ model aux_dose_vacina {
   status_ativo        Boolean               @default(true)
   created_at          DateTime?
   updated_at          DateTime?
+  motivo_desaprovado  String?
   dose_atual_paciente dose_atual_paciente[]
 }
 
@@ -123,8 +124,12 @@ model aux_local {
   status_ativo                 Boolean                  @default(true)
   id_endereco                  Int
   id_tipo_atendimento          Int
+  dt_agendamento_fim           DateTime?
+  dt_agendamento_inicio        DateTime?
   created_at                   DateTime?
   updated_at                   DateTime?
+  motivo_desaprovado           String?
+  horario_funcionamento_total  DateTime?
   aux_endereco                 aux_endereco             @relation(fields: [id_endereco], references: [id])
   aux_tipo_atendimento         aux_tipo_atendimento     @relation(fields: [id_tipo_atendimento], references: [id])
   agendamento_disponivel       agendamento_disponivel[]
@@ -172,15 +177,14 @@ model aux_usuario_perfil {
 }
 
 model dia_local {
-  id                   Int                    @id @default(autoincrement())
-  id_local             Int
-  qtd_vagas_horario    Int
-  data                 DateTime
-  status_ativo         Boolean
-  created_at           DateTime?
-  updated_at           DateTime?
-  aux_local            aux_local              @relation(fields: [id_local], references: [id])
-  paciente_agendamento paciente_agendamento[]
+  id                Int       @id @default(autoincrement())
+  id_local          Int
+  qtd_vagas_horario Int
+  data              DateTime
+  status_ativo      Boolean
+  created_at        DateTime?
+  updated_at        DateTime?
+  aux_local         aux_local @relation(fields: [id_local], references: [id])
 
   @@index([id_local], name: "dia_local_id_local_foreign")
 }
@@ -208,23 +212,23 @@ model horario_agendamento {
   updated_at                DateTime?
   agendamento_disponivel    agendamento_disponivel @relation(fields: [id_agendamento_disponivel], references: [id])
   aux_local                 aux_local              @relation(fields: [id_local], references: [id])
+  paciente_agendamento      paciente_agendamento[]
 
   @@index([id_agendamento_disponivel], name: "id_agendamento_disponivel")
   @@index([id_local], name: "id_local")
 }
 
 model horario_local {
-  id                   Int                    @id @default(autoincrement())
-  id_local             Int
-  id_horario           Int
-  data                 DateTime
-  status_ativo         Boolean
-  qtd_vagas_horario    Int
-  created_at           DateTime?
-  updated_at           DateTime?
-  aux_horario          aux_horario            @relation(fields: [id_horario], references: [id])
-  aux_local            aux_local              @relation(fields: [id_local], references: [id])
-  paciente_agendamento paciente_agendamento[]
+  id                Int         @id @default(autoincrement())
+  id_local          Int
+  id_horario        Int
+  data              DateTime
+  status_ativo      Boolean
+  qtd_vagas_horario Int
+  created_at        DateTime?
+  updated_at        DateTime?
+  aux_horario       aux_horario @relation(fields: [id_horario], references: [id])
+  aux_local         aux_local   @relation(fields: [id_local], references: [id])
 
   @@index([id_horario], name: "horario_local_id_horario_foreign")
   @@index([id_local], name: "horario_local_id_local_foreign")
@@ -239,32 +243,30 @@ model migrations {
 model paciente_agendamento {
   id                              Int                             @id @default(autoincrement())
   id_paciente                     Int
-  id_horario_local                Int
-  id_dia_local                    Int
   id_status_paciente_agendamento  Int
   status_atual                    Boolean
   created_at                      DateTime?
   updated_at                      DateTime?
-  dia_local                       dia_local                       @relation(fields: [id_dia_local], references: [id])
-  horario_local                   horario_local                   @relation(fields: [id_horario_local], references: [id])
+  id_horario_agendamento          Int
+  horario_agendamento             horario_agendamento             @relation(fields: [id_horario_agendamento], references: [id])
   tb_usuarios                     tb_usuarios                     @relation(fields: [id_paciente], references: [id])
   aux_status_paciente_agendamento aux_status_paciente_agendamento @relation(fields: [id_status_paciente_agendamento], references: [id])
 
-  @@index([id_dia_local], name: "id_dia_local")
-  @@index([id_horario_local], name: "id_horario_local")
+  @@index([id_horario_agendamento], name: "id_horario_agendamento")
   @@index([id_paciente], name: "id_paciente")
   @@index([id_status_paciente_agendamento], name: "id_status_paciente_agendamento")
 }
 
 model tb_grupo_em_andamento {
-  id          Int         @id @default(autoincrement())
-  id_grupo    Int
-  criado_por  Int
-  status      Boolean?
-  created_at  DateTime?
-  updated_at  DateTime?
-  tb_usuarios tb_usuarios @relation(fields: [criado_por], references: [id])
-  aux_grupo   aux_grupo   @relation(fields: [id_grupo], references: [id])
+  id                 Int         @id @default(autoincrement())
+  id_grupo           Int
+  criado_por         Int
+  status             Boolean     @default(false)
+  created_at         DateTime?
+  updated_at         DateTime?
+  motivo_desaprovado String?
+  tb_usuarios        tb_usuarios @relation(fields: [criado_por], references: [id])
+  aux_grupo          aux_grupo   @relation(fields: [id_grupo], references: [id])
 
   @@index([criado_por], name: "tb_grupo_em_andamento_criado_por_foreign")
   @@index([id_grupo], name: "tb_grupo_em_andamento_id_grupo_foreign")
